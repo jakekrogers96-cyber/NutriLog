@@ -1,0 +1,41 @@
+{
+“name”: “NutriLog - Nutrition Tracker”,
+“short_name”: “NutriLog”,
+“description”: “Track your daily nutrition, meals, and macros with smart AI estimates”,
+“start_url”: “/”,
+“display”: “standalone”,
+“background_color”: “#ffffff”,
+“theme_color”: “#16a34a”,
+“orientation”: “portrait”,
+“icons”: [
+{
+“src”: “icon-192.png”,
+“sizes”: “192x192”,
+“type”: “image/png”,
+“purpose”: “any maskable”
+},
+{
+“src”: “icon-512.png”,
+“sizes”: “512x512”,
+“type”: “image/png”,
+“purpose”: “any maskable”
+}
+],
+“categories”: [“health”, “lifestyle”, “productivity”],
+“shortcuts”: [
+{
+“name”: “Log Meal”,
+“short_name”: “Log”,
+“description”: “Quick log a meal”,
+“url”: “/?action=log”,
+“icons”: [{ “src”: “icon-192.png”, “sizes”: “192x192” }]
+},
+{
+“name”: “View Progress”,
+“short_name”: “Progress”,
+“description”: “Check today’s progress”,
+“url”: “/?action=progress”,
+“icons”: [{ “src”: “icon-192.png”, “sizes”: “192x192” }]
+}
+]
+}
