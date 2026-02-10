@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="NutriLog">
+  <meta name="theme-color" content="#16a34a">
+  <title>NutriLog - Nutrition Tracker</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🥗</text></svg>">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-primary: #16a34a;
+      --color-primary-dark: #15803d;
+      --color-blue: #2563eb;
+      --color-green: #16a34a;
+      --color-yellow: #ca8a04;
+      --color-purple: #9333ea;
+      --color-red: #dc2626;
+      --color-orange: #ea580c;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%);
+      min-height: 100vh;
+      padding-bottom: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 24px 0 16px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .header-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn-small {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--color-green);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .btn-blue {
+      background: var(--color-blue);
+      color: white;
+    }
+
+    .btn-purple {
+      background: var(--color-purple);
+      color: white;
+    }
+
+    .badge {
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    /* Navigation */
+    .nav-tabs {
+      background: white;
+      border-radius: 16px;
+      padding: 6px;
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.active {
+      background: var(--color-green);
+      color: white;
+      box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .edit-link {
+      color: var(--color-blue);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .edit-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 768px) {
+      .md-grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .gap-3 {
+      gap: 12px;
+    }
+
+    .gap-4 {
+      gap: 16px;
+    }
+
+    /* Goal boxes */
+    .goal-box {
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .goal-value {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .goal-label {
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .goal-remaining {
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Forms */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--color-green);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-green {
+      background: var(--color-green);
+      color: white;
+    }
+
+    .btn-green:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .btn-green:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+    }
+
+    .btn-blue {
+      background: var(--color-blue);
+      color: white;
+    }
+
+    .btn-gray {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-flex {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-flex button {
+      flex: 1;
+    }
+
+    /* Meal cards */
+    .meal-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .meal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .meal-title {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .meal-actions {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .meal-actions span {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .meal-description {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .meal-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .stat-blue { color: var(--color-blue); }
+    .stat-green { color: var(--color-green); }
+    .stat-yellow { color: var(--color-yellow); }
+    .stat-purple { color: var(--color-purple); }
+
+    .component-box {
+      background: #f0fdf4;
+      border-left: 4px solid var(--color-green);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .component-box-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #15803d;
+      margin-bottom: 8px;
+    }
+
+    .component-item {
+      font-size: 11px;
+      color: #166534;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .component-total {
+      border-top: 1px solid #86efac;
+      margin-top: 8px;
+      padding-top: 4px;
+      font-weight: 700;
+      color: #14532d;
+    }
+
+    .assumptions-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--color-blue);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .assumptions-box-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 4px;
+    }
+
+    .assumptions-box ul {
+      list-style: none;
+      font-size: 11px;
+      color: #1e40af;
+    }
+
+    .assumptions-box li {
+      margin-bottom: 4px;
+    }
+
+    /* Progress bars */
+    .progress-item {
+      margin-bottom: 12px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .progress-label {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .progress-value {
+      color: #6b7280;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.3s;
+    }
+
+    .bg-blue-600 { background: var(--color-blue); }
+    .bg-green-600 { background: var(--color-green); }
+    .bg-yellow-600 { background: var(--color-yellow); }
+    .bg-purple-600 { background: var(--color-purple); }
+
+    /* Templates */
+    .template-item {
+      background: #faf5ff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .template-name {
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .template-stats {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .template-actions {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .modal-text {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    textarea.backup-textarea {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      height: 300px;
+      background: #faf5ff;
+      border: 2px solid var(--color-purple);
+    }
+
+    /* Backup reminder */
+    .reminder-urgent {
+      background: #fef2f2;
+      border: 2px solid var(--color-red);
+    }
+
+    .reminder-tonight {
+      background: #fff7ed;
+      border: 2px solid var(--color-orange);
+    }
+
+    .reminder-warning {
+      background: #fefce8;
+      border: 2px solid var(--color-yellow);
+    }
+
+    .reminder {
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .reminder-content {
+      display: flex;
+      gap: 12px;
+    }
+
+    .reminder-icon {
+      font-size: 32px;
+    }
+
+    .reminder-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .reminder-message {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .reminder-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Utilities */
+    .hidden {
+      display: none !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-gray-500 {
+      color: #6b7280;
+    }
+
+    .py-8 {
+      padding: 32px 0;
+    }
+
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+
+    .space-y-2 > * + * {
+      margin-top: 8px;
+    }
+
+    .underline {
+      text-decoration: underline;
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+    .font-bold {
+      font-weight: 700;
+    }
+
+    .font-medium {
+      font-weight: 500;
+    }
+
+    .font-semibold {
+      font-weight: 600;
+    }
+
+    /* Gradients */
+    .bg-gradient-blue {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    }
+
+    .bg-gradient-green {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    }
+
+    .bg-gradient-yellow {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    }
+
+    .bg-gradient-purple {
+      background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    }
+
+    .text-blue-700 { color: #1d4ed8; }
+    .text-blue-600 { color: #2563eb; }
+    .text-blue-800 { color: #1e40af; }
+    .text-green-700 { color: #15803d; }
+    .text-green-600 { color: #16a34a; }
+    .text-green-800 { color: #166534; }
+    .text-yellow-700 { color: #a16207; }
+    .text-yellow-600 { color: #ca8a04; }
+    .text-yellow-800 { color: #854d0e; }
+    .text-purple-700 { color: #7e22ce; }
+    .text-purple-600 { color: #9333ea; }
+    .text-purple-800 { color: #6b21a8; }
+    .text-red-600 { color: #dc2626; }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #6b7280;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🥗 NutriLog</h1>
+      <p class="subtitle">Track your daily nutrition and reach your goals</p>
+
+```
+  <div class="header-buttons">
+    <span class="badge" id="meals-count">0 meals</span>
+    <button class="btn-small btn-primary" id="backup-btn">📋 Copy</button>
+    <button class="btn-small btn-blue" id="show-backup-btn">📄 Show</button>
+    <button class="btn-small btn-purple" id="restore-btn">📥 Restore</button>
+  </div>
+  <p class="subtitle" style="margin-top: 8px; font-size: 11px;">
+    💡 Copy backup & paste into Claude chat to save permanently
+  </p>
+</header>
+
+<!-- Backup Reminder -->
+<div id="backup-reminder" style="display: none;"></div>
+
+<!-- Navigation -->
+<div class="nav-tabs">
+  <button class="nav-btn active" id="nav-today">📅 Today</button>
+  <button class="nav-btn" id="nav-history">📖 History</button>
+  <button class="nav-btn" id="nav-comparison">📊 Stats</button>
+</div>
+
+<!-- Today View -->
+<div id="today-view">
+  <div class="grid md-grid-cols-2">
+    <!-- Goals Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">🎯 Daily Goals</h2>
+        <a class="edit-link" id="edit-goals-btn">Edit</a>
+      </div>
+      <div id="goal-cards"></div>
+    </div>
+
+    <!-- Log Meal Card -->
+    <div class="card">
+      <h2 class="card-title mb-3">➕ Log Meal</h2>
+      <div class="form-group">
+        <input type="date" id="date-input">
+      </div>
+      <div class="form-group">
+        <input type="text" id="meal-name" placeholder="Meal name (optional)">
+      </div>
+      <div class="form-group">
+        <textarea id="meal-input" placeholder="What did you eat? (e.g., 2 eggs, toast)"></textarea>
+      </div>
+      <div class="btn-flex mb-2">
+        <button class="btn btn-green" id="add-meal-btn">Add Meal</button>
+        <button class="btn btn-blue" id="save-template-btn">Save</button>
+      </div>
+      <div id="show-templates-btn" class="text-center" style="display: none;">
+        <button class="btn-small" style="color: var(--color-purple); background: none; border: none; text-decoration: underline;">
+          + Show Saved (<span id="template-count">0</span>)
+        </button>
+      </div>
+      <div id="templates-container" style="display: none; margin-top: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- Today's Progress -->
+  <div class="card">
+    <h2 class="card-title mb-3">📈 Today's Progress</h2>
+    <div id="progress-bars"></div>
+  </div>
+
+  <!-- Today's Meals -->
+  <div class="card">
+    <h2 class="card-title mb-3">🍽️ Today's Meals</h2>
+    <div id="todays-meals-list"></div>
+  </div>
+</div>
+
+<!-- History View -->
+<div id="history-view" class="hidden">
+  <div class="card">
+    <h2 class="card-title mb-3">📖 History</h2>
+    <div class="form-group">
+      <label>Select Month</label>
+      <input type="month" id="history-month">
+    </div>
+    <div id="history-meals-list"></div>
+  </div>
+</div>
+
+<!-- Comparison View -->
+<div id="comparison-view" class="hidden">
+  <div class="card">
+    <h2 class="card-title mb-3">📊 Weekly Statistics</h2>
+    <div id="comparison-content"></div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Backup Modal -->
+
+  <div id="backup-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">📋 Your Backup</h2>
+      <p class="modal-text">
+        <strong>For Claude iOS App:</strong><br>
+        1. Tap and hold the text below<br>
+        2. Select All → Copy<br>
+        3. Paste into Claude chat and send<br>
+        4. Your backup is saved in chat history!
+      </p>
+      <textarea id="backup-text" class="backup-textarea" readonly></textarea>
+      <div class="btn-flex" style="margin-top: 16px;">
+        <button class="btn btn-green" onclick="document.getElementById('backup-text').select(); document.execCommand('copy'); alert('Copied to clipboard!');">
+          Select Text
+        </button>
+        <button class="btn btn-gray" onclick="document.getElementById('backup-modal').style.display='none'">
+          Close
+        </button>
+      </div>
+      <p style="font-size: 12px; color: #999; margin-top: 12px;">
+        💡 Tip: Save your backup in a Claude chat so you can access it anytime!
+      </p>
+    </div>
+  </div>
+
+  <!-- Restore Modal -->
+
+  <div id="restore-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">📥 Restore Backup</h2>
+      <p class="modal-text">
+        <strong>For Claude iOS App:</strong><br>
+        1. Go to your backup message in Claude<br>
+        2. Copy all the JSON text<br>
+        3. Paste it in the box below<br>
+        4. Click "Import Data"
+      </p>
+      <textarea id="restore-text" class="backup-textarea" placeholder="Paste your backup JSON here..."></textarea>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <button class="btn btn-purple" id="import-btn" style="padding: 16px; font-size: 18px; font-weight: 700;">
+          ✅ IMPORT DATA NOW
+        </button>
+        <button class="btn" style="background: #e5e7eb; color: #374151;" onclick="document.getElementById('restore-modal').style.display='none'; document.getElementById('restore-text').value='';">
+          Cancel
+        </button>
+      </div>
+      <p style="font-size: 12px; color: #999; margin-top: 12px;">
+        💡 This imports meals, templates, AND your custom goals!
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+
+  <script src="./js/db.js"></script>
+
+  <script src="./js/nutrition-estimator.js"></script>
+
+  <script src="./js/app.js"></script>
+
+  <script src="./js/ui-renderer.js"></script>
+
+  <script>
+    // Initialize app
+    let app;
+    
+    window.addEventListener('load', async () => {
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('./service-worker.js');
+          console.log('✅ Service Worker registered');
+        } catch (error) {
+          console.log('Service Worker registration failed:', error);
+        }
+      }
+
+      // Initialize app
+      app = new NutriLogApp();
+      await app.init();
+
+      // Update meals count
+      document.getElementById('meals-count').textContent = `${app.meals.length} meals`;
+
+      // Setup edit goals button
+      document.getElementById('edit-goals-btn').addEventListener('click', () => {
+        app.editingGoals = !app.editingGoals;
+        document.getElementById('edit-goals-btn').textContent = app.editingGoals ? '✓ Done' : 'Edit';
+        app.render();
+      });
+
+      // Setup templates toggle
+      const showTemplatesBtn = document.getElementById('show-templates-btn');
+      const templatesContainer = document.getElementById('templates-container');
+      const templateCount = document.getElementById('template-count');
+
+      if (app.templates.length > 0) {
+        showTemplatesBtn.style.display = 'block';
+        templateCount.textContent = app.templates.length;
+      }
+
+      showTemplatesBtn.addEventListener('click', () => {
+        const isHidden = templatesContainer.style.display === 'none';
+        templatesContainer.style.display = isHidden ? 'block' : 'none';
+        showTemplatesBtn.querySelector('button').textContent = isHidden 
+          ? `− Hide Saved (${app.templates.length})`
+          : `+ Show Saved (${app.templates.length})`;
+      });
+
+      // Setup import button
+      document.getElementById('import-btn').addEventListener('click', () => {
+        app.handleRestore();
+      });
+    });
+  </script>
+
+</body>
+</html>
